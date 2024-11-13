@@ -1,6 +1,6 @@
 import { exchangeNames, queueNames, routingKeys } from '@notifications/constants/queue.constant';
 import * as connection from '@notifications/queues/connections';
-import { consumeAuthEmailMessages, consumeOrderEmailMessages } from '@notifications/queues/consumers/email.consumer';
+import { emailConsumes } from '@notifications/queues/consumers/email.consumer';
 import { Channel } from 'amqplib';
 
 jest.mock('@notifications/queues/connections');
@@ -34,7 +34,7 @@ describe('Email consumer', () => {
       });
       jest.spyOn(connection, 'createConnection').mockReturnValue(channel as never);
       const connectionChannel: Channel | undefined = await connection.createConnection();
-      await consumeAuthEmailMessages(connectionChannel!);
+      await emailConsumes.consumeAuthEmailMessages(connectionChannel!);
       expect(connectionChannel!.assertExchange).toHaveBeenCalledWith(exchangeNames.EMAIL_NOTIFICATION, 'direct');
       expect(connectionChannel!.assertQueue).toHaveBeenCalledTimes(1);
       expect(connectionChannel!.bindQueue).toHaveBeenCalledWith(
@@ -64,7 +64,7 @@ describe('Email consumer', () => {
       });
       jest.spyOn(connection, 'createConnection').mockReturnValue(channel as never);
       const connectionChannel: Channel | undefined = await connection.createConnection();
-      await consumeOrderEmailMessages(connectionChannel!);
+      await emailConsumes.consumeOrderEmailMessages(connectionChannel!);
       expect(connectionChannel!.assertExchange).toHaveBeenCalledWith(exchangeNames.ORDER_NOTIFICATION, 'direct');
       expect(connectionChannel!.assertQueue).toHaveBeenCalledTimes(1);
       expect(connectionChannel!.bindQueue).toHaveBeenCalledWith(

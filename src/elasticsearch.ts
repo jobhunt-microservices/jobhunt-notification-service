@@ -1,25 +1,33 @@
 import { Client } from '@elastic/elasticsearch';
-import { ClusterHealthResponse } from '@elastic/elasticsearch/lib/api/types';
 import { config } from '@notifications/config';
+import { SERVICE_NAME } from '@notifications/constants';
 import { logger } from '@notifications/utils/logger.util';
-import { SERVICE_NAME } from './constants';
 
 const log = logger('notificationElasticsearchServer', 'debug');
 
-const elasticsearchClient = new Client({
-  node: `${config.ELASTIC_SEARCH_URL}`
-});
+class ElasticSearch {
+  private elasticSearchClient: Client;
 
-export async function checkConnection(): Promise<void> {
-  let isConnected = false;
-  while (!isConnected) {
-    try {
-      const health: ClusterHealthResponse = await elasticsearchClient.cluster.health({});
-      log.info(SERVICE_NAME + ` elasticsearch healthy status - ${health.status}`);
-      isConnected = true;
-    } catch (error) {
-      log.error(SERVICE_NAME + ' connection to elasticsearch failed, retrying');
-      log.log('error', SERVICE_NAME + ' checkConnection() method:', error);
+  constructor() {
+    this.elasticSearchClient = new Client({
+      node: `${config.ELASTIC_SEARCH_URL}`
+    });
+  }
+
+  public async checkConnection(): Promise<void> {
+    let isConnected = false;
+    while (!isConnected) {
+      try {
+        log.info(SERVICE_NAME + ' connecting to elasticsearch');
+        const health = await this.elasticSearchClient.cluster.health({});
+        log.info(SERVICE_NAME + ` elasticsearch health status - ${health.status}`);
+        isConnected = true;
+      } catch (error) {
+        log.error(SERVICE_NAME + ' connection to elasticsearch failed, retrying');
+        log.log('error', SERVICE_NAME + ' checkConnection() method:', error);
+      }
     }
   }
 }
+
+export const elasticSearch = new ElasticSearch();

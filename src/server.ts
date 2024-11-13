@@ -1,13 +1,13 @@
 import 'express-async-errors';
 
 import { SERVICE_NAME } from '@notifications/constants';
-import { checkConnection } from '@notifications/elasticsearch';
 import { createConnection } from '@notifications/queues/connections';
-import { consumeAuthEmailMessages, consumeOrderEmailMessages } from '@notifications/queues/consumers/email.consumer';
+import { emailConsumes } from '@notifications/queues/consumers/email.consumer';
 import { healthRoutes } from '@notifications/routes';
 import { logger } from '@notifications/utils/logger.util';
 import { Application } from 'express';
 import http from 'http';
+import { elasticSearch } from './elasticsearch';
 
 const SERVER_PORT = 4001;
 
@@ -26,21 +26,21 @@ export class NotificationServer {
     this.startElasticSearch();
   };
 
-  private startQueues = async () => {
+  private async startQueues() {
     const emailChannel = await createConnection();
     if (emailChannel) {
-      await consumeAuthEmailMessages(emailChannel);
-      await consumeOrderEmailMessages(emailChannel);
+      await emailConsumes.consumeAuthEmailMessages(emailChannel);
+      await emailConsumes.consumeOrderEmailMessages(emailChannel);
     } else {
       log.log('error', SERVICE_NAME + ` start queue failed, channel undefined`);
     }
-  };
+  }
 
-  private startElasticSearch = () => {
-    checkConnection();
-  };
+  private startElasticSearch() {
+    elasticSearch.checkConnection();
+  }
 
-  private startServer = () => {
+  private startServer() {
     try {
       const httpServer: http.Server = new http.Server(this.app);
       log.info(`Worker with process id of ${process.pid} on notification service has started`);
@@ -50,5 +50,5 @@ export class NotificationServer {
     } catch (error) {
       log.log('error', SERVICE_NAME + ' startServer() method:', error);
     }
-  };
+  }
 }
