@@ -13,36 +13,42 @@ const SERVER_PORT = 4001;
 
 const log = logger('notificationServer', 'debug');
 
-export const start = (app: Application): void => {
-  startServer(app);
-  app.use('', healthRoutes());
-
-  startQueues();
-  startElasticSearch();
-};
-
-const startQueues = async () => {
-  const emailChannel = await createConnection();
-  if (emailChannel) {
-    await consumeAuthEmailMessages(emailChannel);
-    await consumeOrderEmailMessages(emailChannel);
-  } else {
-    log.log('error', SERVICE_NAME + ` start queue failed, channel undefined`);
+export class NotificationServer {
+  private app: Application;
+  constructor(app: Application) {
+    this.app = app;
   }
-};
 
-const startElasticSearch = () => {
-  checkConnection();
-};
+  start = (): void => {
+    this.startServer();
+    this.app.use('', healthRoutes());
+    this.startQueues();
+    this.startElasticSearch();
+  };
 
-const startServer = (app: Application) => {
-  try {
-    const httpServer: http.Server = new http.Server(app);
-    log.info(`Worker with process id of ${process.pid} on notification service has started`);
-    httpServer.listen(SERVER_PORT, () => {
-      log.info(SERVICE_NAME + ` running on port ${SERVER_PORT}`);
-    });
-  } catch (error) {
-    log.log('error', SERVICE_NAME + ' startServer() method:', error);
-  }
-};
+  private startQueues = async () => {
+    const emailChannel = await createConnection();
+    if (emailChannel) {
+      await consumeAuthEmailMessages(emailChannel);
+      await consumeOrderEmailMessages(emailChannel);
+    } else {
+      log.log('error', SERVICE_NAME + ` start queue failed, channel undefined`);
+    }
+  };
+
+  private startElasticSearch = () => {
+    checkConnection();
+  };
+
+  private startServer = () => {
+    try {
+      const httpServer: http.Server = new http.Server(this.app);
+      log.info(`Worker with process id of ${process.pid} on notification service has started`);
+      httpServer.listen(SERVER_PORT, () => {
+        log.info(SERVICE_NAME + ` running on port ${SERVER_PORT}`);
+      });
+    } catch (error) {
+      log.log('error', SERVICE_NAME + ' startServer() method:', error);
+    }
+  };
+}
