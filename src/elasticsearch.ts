@@ -18,7 +18,7 @@ export async function checkConnection(): Promise<void> {
       log.info(SERVICE_NAME + ` elasticsearch healthy status - ${health.status}`);
       isConnected = true;
     } catch (error) {
-      log.error('connection to elasticsearch failed, retrying');
+      log.error(SERVICE_NAME + ' connection to elasticsearch failed, retrying');
       log.log('error', SERVICE_NAME + ' checkConnection() method:', error);
     }
   }

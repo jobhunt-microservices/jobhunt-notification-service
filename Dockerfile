@@ -1,4 +1,4 @@
-FROM arm64v8/node:22 as builder
+FROM arm64v8/node:20-alpine as builder
 
 WORKDIR /app
 COPY package.json .
@@ -9,7 +9,7 @@ COPY tools ./tools
 RUN npm i -g npm@latest
 RUN npm ci && npm run build
 
-FROM arm64v8/node:22
+FROM arm64v8/node:23-alpine
 WORKDIR /app
 RUN apk add --no-cache curl
 COPY tsconfig.json .
