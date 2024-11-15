@@ -1,4 +1,4 @@
-import { IEmailLocals } from '@jobhunt-microservices/jobhunt-shared';
+import { IEmailLocals, getErrorMessage } from '@jobhunt-microservices/jobhunt-shared';
 import { config } from '@notifications/config';
 import { SERVICE_NAME } from '@notifications/constants';
 import { emailTemplates } from '@notifications/constants/email-templates.constant';
@@ -17,7 +17,7 @@ class EmailConsumes {
       if (!channel) {
         channel = (await createConnection()) as Channel;
       }
-      channel.assertExchange(exchangeNames.EMAIL_NOTIFICATION, 'direct');
+      await channel.assertExchange(exchangeNames.EMAIL_NOTIFICATION, 'direct');
       const jobhuntQueue = await channel.assertQueue(queueNames.AUTH_EMAIL, { durable: true, autoDelete: false });
       await channel.bindQueue(jobhuntQueue.queue, exchangeNames.EMAIL_NOTIFICATION, routingKeys.AUTH_EMAIL);
       channel.consume(jobhuntQueue.queue, async (msg: ConsumeMessage | null) => {
@@ -37,7 +37,7 @@ class EmailConsumes {
         }
       });
     } catch (error) {
-      log.log('error', SERVICE_NAME + ' consumeAuthEmailMessages() method:', error);
+      log.log('error', SERVICE_NAME + ' consumeAuthEmailMessages() method:', getErrorMessage(error));
     }
   };
 
@@ -46,7 +46,7 @@ class EmailConsumes {
       if (!channel) {
         channel = (await createConnection()) as Channel;
       }
-      channel.assertExchange(exchangeNames.ORDER_NOTIFICATION, 'direct');
+      await channel.assertExchange(exchangeNames.ORDER_NOTIFICATION, 'direct');
       const jobhuntQueue = await channel.assertQueue(queueNames.ORDER_EMAIL, { durable: true, autoDelete: false });
       await channel.bindQueue(jobhuntQueue.queue, exchangeNames.ORDER_NOTIFICATION, routingKeys.ORDER_EMAIL);
       channel.consume(jobhuntQueue.queue, async (msg: ConsumeMessage | null) => {
@@ -115,7 +115,7 @@ class EmailConsumes {
         }
       });
     } catch (error) {
-      log.log('error', SERVICE_NAME + ' consumeAuthEmailMessages() method:', error);
+      log.log('error', SERVICE_NAME + ' consumeAuthEmailMessages() method:', getErrorMessage(error));
     }
   };
 }

@@ -1,3 +1,4 @@
+import { getErrorMessage } from '@jobhunt-microservices/jobhunt-shared';
 import { config } from '@notifications/config';
 import { SERVICE_NAME } from '@notifications/constants';
 import { logger } from '@notifications/utils/logger.util';
@@ -13,7 +14,7 @@ export const createConnection = async (): Promise<Channel | undefined> => {
     closeConnection(channel, connection);
     return channel;
   } catch (error) {
-    log.log('error', SERVICE_NAME + ' createConnection() method:', error);
+    log.log('error', SERVICE_NAME + ' createConnection() method:', getErrorMessage(error));
     return undefined;
   }
 };

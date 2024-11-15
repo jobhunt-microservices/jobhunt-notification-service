@@ -1,5 +1,6 @@
 import 'express-async-errors';
 
+import { getErrorMessage } from '@jobhunt-microservices/jobhunt-shared';
 import { SERVICE_NAME } from '@notifications/constants';
 import { createConnection } from '@notifications/queues/connections';
 import { emailConsumes } from '@notifications/queues/consumers/email.consumer';
@@ -48,7 +49,7 @@ export class NotificationServer {
         log.info(SERVICE_NAME + ` running on port ${SERVER_PORT}`);
       });
     } catch (error) {
-      log.log('error', SERVICE_NAME + ' startServer() method:', error);
+      log.log('error', SERVICE_NAME + ' startServer() method:', getErrorMessage(error));
     }
   }
 }

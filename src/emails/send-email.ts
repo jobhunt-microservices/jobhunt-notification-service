@@ -1,4 +1,4 @@
-import { IEmailLocals } from '@jobhunt-microservices/jobhunt-shared';
+import { getErrorMessage, IEmailLocals } from '@jobhunt-microservices/jobhunt-shared';
 import { config } from '@notifications/config';
 import { SERVICE_NAME } from '@notifications/constants';
 import { logger } from '@notifications/utils/logger.util';
@@ -48,7 +48,7 @@ class SendMailTemplates {
         locals
       });
     } catch (error) {
-      log.log('error', SERVICE_NAME + ' sendEmailByTemplate() method:', error);
+      log.log('error', SERVICE_NAME + ' sendEmailByTemplate() method:', getErrorMessage(error));
     }
   };
 }

@@ -1,4 +1,5 @@
 import { Client } from '@elastic/elasticsearch';
+import { getErrorMessage } from '@jobhunt-microservices/jobhunt-shared';
 import { config } from '@notifications/config';
 import { SERVICE_NAME } from '@notifications/constants';
 import { logger } from '@notifications/utils/logger.util';
@@ -24,7 +25,7 @@ class ElasticSearch {
         isConnected = true;
       } catch (error) {
         log.error(SERVICE_NAME + ' connection to elasticsearch failed, retrying');
-        log.log('error', SERVICE_NAME + ' checkConnection() method:', error);
+        log.log('error', SERVICE_NAME + ' checkConnection() method:', getErrorMessage(error));
       }
     }
   }
