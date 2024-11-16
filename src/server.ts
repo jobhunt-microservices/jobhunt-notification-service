@@ -2,13 +2,13 @@ import 'express-async-errors';
 
 import { getErrorMessage } from '@jobhunt-microservices/jobhunt-shared';
 import { SERVICE_NAME } from '@notifications/constants';
+import { elasticSearch } from '@notifications/elasticsearch';
 import { createConnection } from '@notifications/queues/connections';
 import { emailConsumes } from '@notifications/queues/consumers/email.consumer';
 import { healthRoutes } from '@notifications/routes';
 import { logger } from '@notifications/utils/logger.util';
 import { Application } from 'express';
 import http from 'http';
-import { elasticSearch } from './elasticsearch';
 
 const SERVER_PORT = 4001;
 
