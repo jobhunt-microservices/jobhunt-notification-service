@@ -36,6 +36,6 @@
       "@notifications/*": ["src/*"]
     }
   },
-  "include": ["src"],
+  "include": ["src", "src/queues/consumers/.ts"],
   "exclude": ["node_modules"]
 }

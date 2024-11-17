@@ -4,6 +4,7 @@ import { getErrorMessage } from '@jobhunt-microservices/jobhunt-shared';
 import { SERVICE_NAME } from '@notifications/constants';
 import { elasticSearch } from '@notifications/elasticsearch';
 import { createConnection } from '@notifications/queues/connections';
+import { authConsumes } from '@notifications/queues/consumers/auth.consumer';
 import { emailConsumes } from '@notifications/queues/consumers/email.consumer';
 import { healthRoutes } from '@notifications/routes';
 import { logger } from '@notifications/utils/logger.util';
@@ -28,10 +29,15 @@ export class NotificationServer {
   };
 
   private async startQueues() {
-    const emailChannel = await createConnection();
-    if (emailChannel) {
-      await emailConsumes.consumeAuthEmailMessages(emailChannel);
-      await emailConsumes.consumeOrderEmailMessages(emailChannel);
+    const channel = await createConnection();
+
+    if (channel) {
+      channel.prefetch(1);
+
+      await emailConsumes.consumeAuthEmailMessages(channel);
+      await emailConsumes.consumeOrderEmailMessages(channel);
+
+      await authConsumes.consumeAuthUserCreatedMessages(channel);
     } else {
       log.log('error', SERVICE_NAME + ` start queue failed, channel undefined`);
     }
