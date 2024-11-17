@@ -1,17 +1,20 @@
 export const exchangeNames = {
-  EMAIL_NOTIFICATION: 'jobhunt-email-notification',
-  ORDER_NOTIFICATION: 'jobhunt-order-notification',
-  AUTH_NOTIFICATION: 'jobhunt-auth-notification'
+  SEND_EMAIL: 'jobhunt-send-email',
+  USER_CREATED: 'jobhunt-user-created',
+  BUY_CREATED: 'jobhunt-buyer-created',
+  ORDER_UPDATE: 'jobhunt-order-update'
 } as const satisfies Record<string, string>;
 
 export const routingKeys = {
-  AUTH_EMAIL: 'auth-email',
-  AUTH_USER: 'auth-user',
-  ORDER_EMAIL: 'order-email'
+  SEND_EMAIL: 'send.email',
+  USER_CREATED: 'user.created',
+  BUYER_CREATED: 'buyer.created',
+  ORDER_UPDATE: 'order.update'
 } as const satisfies Record<string, string>;
 
 export const queueNames = {
-  AUTH_EMAIL: 'auth-email-queue',
-  AUTH_USER: 'auth-user-queue',
-  ORDER_EMAIL: 'order-email-queue'
+  SEND_EMAIL: 'send.email.queue',
+  USER_CREATED: 'user.created.queue',
+  BUYER_CREATED: 'buyer.created.queue',
+  ORDER_UPDATE: 'order.update.queue'
 } as const satisfies Record<string, string>;

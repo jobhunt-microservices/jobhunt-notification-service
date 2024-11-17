@@ -17,9 +17,9 @@ class EmailConsumes {
       if (!channel) {
         channel = (await createConnection()) as Channel;
       }
-      await channel.assertExchange(exchangeNames.EMAIL_NOTIFICATION, 'direct');
-      const jobhuntQueue = await channel.assertQueue(queueNames.AUTH_EMAIL, { durable: true, autoDelete: false });
-      await channel.bindQueue(jobhuntQueue.queue, exchangeNames.EMAIL_NOTIFICATION, routingKeys.AUTH_EMAIL);
+      await channel.assertExchange(exchangeNames.SEND_EMAIL, 'direct');
+      const jobhuntQueue = await channel.assertQueue(queueNames.SEND_EMAIL, { durable: true, autoDelete: false });
+      await channel.bindQueue(jobhuntQueue.queue, exchangeNames.SEND_EMAIL, routingKeys.SEND_EMAIL);
       channel.consume(jobhuntQueue.queue, async (msg: ConsumeMessage | null) => {
         if (msg) {
           const { receiverEmail, username, verifyLink, resetLink, template } = JSON.parse(msg.content.toString());
@@ -33,7 +33,7 @@ class EmailConsumes {
           await mailTransport.sendEmail(template, receiverEmail, locals);
           channel.ack(msg);
         } else {
-          log.info(SERVICE_NAME + ` channel consumer en: ${exchangeNames.EMAIL_NOTIFICATION}, rk: ${routingKeys.AUTH_EMAIL} is empty`);
+          log.info(SERVICE_NAME + ` channel consumer en: ${exchangeNames.SEND_EMAIL}, rk: ${routingKeys.SEND_EMAIL} is empty`);
         }
       });
     } catch (error) {
@@ -46,9 +46,9 @@ class EmailConsumes {
       if (!channel) {
         channel = (await createConnection()) as Channel;
       }
-      await channel.assertExchange(exchangeNames.ORDER_NOTIFICATION, 'direct');
-      const jobhuntQueue = await channel.assertQueue(queueNames.ORDER_EMAIL, { durable: true, autoDelete: false });
-      await channel.bindQueue(jobhuntQueue.queue, exchangeNames.ORDER_NOTIFICATION, routingKeys.ORDER_EMAIL);
+      await channel.assertExchange(exchangeNames.ORDER_UPDATE, 'direct');
+      const jobhuntQueue = await channel.assertQueue(queueNames.ORDER_UPDATE, { durable: true, autoDelete: false });
+      await channel.bindQueue(jobhuntQueue.queue, exchangeNames.ORDER_UPDATE, routingKeys.ORDER_UPDATE);
       channel.consume(jobhuntQueue.queue, async (msg: ConsumeMessage | null) => {
         if (msg) {
           const {
@@ -111,7 +111,7 @@ class EmailConsumes {
           }
           channel.ack(msg);
         } else {
-          log.info(SERVICE_NAME + ` channel consumer en: ${exchangeNames.ORDER_NOTIFICATION}, rk: ${routingKeys.ORDER_EMAIL} is empty`);
+          log.info(SERVICE_NAME + ` channel consumer en: ${exchangeNames.ORDER_UPDATE}, rk: ${routingKeys.ORDER_UPDATE} is empty`);
         }
       });
     } catch (error) {

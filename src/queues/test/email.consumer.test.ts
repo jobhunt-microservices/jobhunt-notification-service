@@ -28,20 +28,16 @@ describe('Email consumer', () => {
 
       jest.spyOn(channel, 'assertExchange');
       jest.spyOn(channel, 'assertQueue').mockReturnValue({
-        queue: queueNames.AUTH_EMAIL,
+        queue: queueNames.SEND_EMAIL,
         messageCount: 0,
         consumerCount: 0
       });
       jest.spyOn(connection, 'createConnection').mockReturnValue(channel as never);
       const connectionChannel: Channel | undefined = await connection.createConnection();
       await emailConsumes.consumeAuthEmailMessages(connectionChannel!);
-      expect(connectionChannel!.assertExchange).toHaveBeenCalledWith(exchangeNames.EMAIL_NOTIFICATION, 'direct');
+      expect(connectionChannel!.assertExchange).toHaveBeenCalledWith(exchangeNames.SEND_EMAIL, 'direct');
       expect(connectionChannel!.assertQueue).toHaveBeenCalledTimes(1);
-      expect(connectionChannel!.bindQueue).toHaveBeenCalledWith(
-        queueNames.AUTH_EMAIL,
-        exchangeNames.EMAIL_NOTIFICATION,
-        routingKeys.AUTH_EMAIL
-      );
+      expect(connectionChannel!.bindQueue).toHaveBeenCalledWith(queueNames.SEND_EMAIL, exchangeNames.SEND_EMAIL, routingKeys.SEND_EMAIL);
       expect(connectionChannel!.consume).toHaveBeenCalledTimes(1);
     });
   });
@@ -58,19 +54,19 @@ describe('Email consumer', () => {
 
       jest.spyOn(channel, 'assertExchange');
       jest.spyOn(channel, 'assertQueue').mockReturnValue({
-        queue: queueNames.ORDER_EMAIL,
+        queue: queueNames.ORDER_UPDATE,
         messageCount: 0,
         consumerCount: 0
       });
       jest.spyOn(connection, 'createConnection').mockReturnValue(channel as never);
       const connectionChannel: Channel | undefined = await connection.createConnection();
       await emailConsumes.consumeOrderEmailMessages(connectionChannel!);
-      expect(connectionChannel!.assertExchange).toHaveBeenCalledWith(exchangeNames.ORDER_NOTIFICATION, 'direct');
+      expect(connectionChannel!.assertExchange).toHaveBeenCalledWith(exchangeNames.ORDER_UPDATE, 'direct');
       expect(connectionChannel!.assertQueue).toHaveBeenCalledTimes(1);
       expect(connectionChannel!.bindQueue).toHaveBeenCalledWith(
-        queueNames.ORDER_EMAIL,
-        exchangeNames.ORDER_NOTIFICATION,
-        routingKeys.ORDER_EMAIL
+        queueNames.ORDER_UPDATE,
+        exchangeNames.ORDER_UPDATE,
+        routingKeys.ORDER_UPDATE
       );
       expect(connectionChannel!.consume).toHaveBeenCalledTimes(1);
     });

@@ -13,16 +13,16 @@ class AuthConsumes {
       if (!channel) {
         channel = (await createConnection()) as Channel;
       }
-      await channel.assertExchange(exchangeNames.AUTH_NOTIFICATION, 'direct');
-      const jobhuntQueue = await channel.assertQueue(queueNames.AUTH_USER, { durable: true, autoDelete: false });
-      await channel.bindQueue(jobhuntQueue.queue, exchangeNames.AUTH_NOTIFICATION, routingKeys.AUTH_USER);
+      await channel.assertExchange(exchangeNames.USER_CREATED, 'direct');
+      const jobhuntQueue = await channel.assertQueue(queueNames.USER_CREATED, { durable: true, autoDelete: false });
+      await channel.bindQueue(jobhuntQueue.queue, exchangeNames.USER_CREATED, routingKeys.USER_CREATED);
       channel.consume(jobhuntQueue.queue, async (msg: ConsumeMessage | null) => {
         if (msg) {
           const { username, email } = JSON.parse(msg.content.toString());
           console.log(`User ${username} has been created ${new Date()}`);
           channel.ack(msg);
         } else {
-          log.info(SERVICE_NAME + ` channel consumer en: ${exchangeNames.AUTH_NOTIFICATION}, rk: ${routingKeys.AUTH_USER} is empty`);
+          log.info(SERVICE_NAME + ` channel consumer en: ${exchangeNames.USER_CREATED}, rk: ${routingKeys.USER_CREATED} is empty`);
         }
       });
     } catch (error) {
